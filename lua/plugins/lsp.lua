@@ -26,7 +26,10 @@ return {
                         vim.keymap.set("n", keys, func, { buffer = event.buf, desc = desc })
                     end
                     map("gd", vim.lsp.buf.definition, "Go to definition")
-                    map("gr", vim.lsp.buf.references, "References")
+                    -- Buffer-local, so these shadow Neovim's built-in grr/gri
+                    -- without deleting them. grn/gra keep working as shipped.
+                    map("grr", "<cmd>Telescope lsp_references<CR>", "References")
+                    map("gri", "<cmd>Telescope lsp_implementations<CR>", "Implementations")
                     map("K", vim.lsp.buf.hover, "Hover docs")
                     map("<leader>ca", vim.lsp.buf.code_action, "Code action")
                     map("<leader>rn", vim.lsp.buf.rename, "Rename")
@@ -45,6 +48,10 @@ return {
                 settings = {
                     Lua = {
                         diagnostics = { globals = { "vim" } },
+                        -- Default is "Disable", which completes a bare name.
+                        -- "Replace" inserts the full call with each parameter
+                        -- as a snippet tab-stop (<Tab>/<S-Tab> to move).
+                        completion = { callSnippet = "Replace" },
                     },
                 },
             })

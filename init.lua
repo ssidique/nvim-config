@@ -27,9 +27,27 @@ map("n", "<C-k>", "<C-w>k")
 map("n", "<C-l>", "<C-w>l")
 
 -- Buffers
-map("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
-map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
-map("n", "<S-h>", ":bprev<CR>", { desc = "Prev buffer" })
+-- <S-h>/<S-l>/<leader>b* live in lua/plugins/bufferline.lua so they follow the
+-- tabline's order rather than buffer-number order. <leader>bd is in snacks.lua.
+-- <C-^> (built-in) toggles the alternate buffer.
+
+-- Quickfix navigation -- walks the list telescope's <C-q> fills
+map("n", "]q", ":cnext<CR>zz", { silent = true, desc = "Next quickfix" })
+map("n", "[q", ":cprev<CR>zz", { silent = true, desc = "Prev quickfix" })
+map("n", "]Q", ":clast<CR>zz", { silent = true, desc = "Last quickfix" })
+map("n", "[Q", ":cfirst<CR>zz", { silent = true, desc = "First quickfix" })
+
+map("n", "<leader>q", function()
+    -- getwininfo() flags quickfix=1 for location-list windows too, so
+    -- loclist==0 is what actually isolates the quickfix window.
+    for _, win in ipairs(vim.fn.getwininfo()) do
+        if win.quickfix == 1 and win.loclist == 0 then
+            vim.cmd("cclose")
+            return
+        end
+    end
+    vim.cmd("copen")
+end, { desc = "Toggle quickfix" })
 
 -- Better escape
 map("i", "jk", "<Esc>")

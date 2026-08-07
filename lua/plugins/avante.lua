@@ -1,5 +1,10 @@
 return {
   "yetone/avante.nvim",
+  -- Disabled: avante claims 17 <leader>a* keys, which makes <leader>a
+  -- (harpoon add) stall for 'timeoutlen'. Flip to true to restore it --
+  -- but then rebind harpoon's add key in harpoon.lua to something that
+  -- isn't a prefix, e.g. <leader>m.
+  enabled = false,
   event = "VeryLazy",
   version = false, -- Use latest code rather than releases
   build = "make",
