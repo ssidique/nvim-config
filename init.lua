@@ -65,6 +65,22 @@ map("n", "N", "Nzzzv")
 -- Clear search highlight
 map("n", "<Esc>", ":noh<CR>", { silent = true })
 
+-- Review comment for Claude Code's nvim-review mod: opens a `CLAUDE: ` marker above the
+-- cursor line in the filetype's own comment syntax (# / -- / // / <!-- -->), in insert mode.
+map("n", "<leader>cc", function()
+    local cs = vim.bo.commentstring
+    if not cs:find("%%s") then cs = "# %s" end
+    local before, after = cs:match("^(.-)%%s(.-)$")
+    local indent = vim.api.nvim_get_current_line():match("^%s*")
+    local head = indent .. vim.trim(before) .. " CLAUDE: "
+    local tail = vim.trim(after) == "" and "" or " " .. vim.trim(after)
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    vim.api.nvim_buf_set_lines(0, row - 1, row - 1, false, { head .. tail })
+    vim.api.nvim_win_set_cursor(0, { row, #head })
+    -- with nothing after the cursor, `startinsert!` appends at the end of the line
+    vim.cmd(tail == "" and "startinsert!" or "startinsert")
+end, { desc = "Claude review comment" })
+
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
